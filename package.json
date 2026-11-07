@@ -1,0 +1,81 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "quick-calendar-ja",
+  "title": "Quick Calendar JA",
+  "description": "日本の祝日に対応した月表示カレンダー",
+  "icon": "command-icon.png",
+  "author": "lovelovetrb",
+  "platforms": [
+    "macOS"
+  ],
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Quick Calendar JA",
+      "description": "月のカレンダーを日本の祝日つきで表示します",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "weekStart",
+      "type": "dropdown",
+      "required": false,
+      "title": "週の始まり",
+      "description": "カレンダーの週の始まりの曜日",
+      "data": [
+        {
+          "title": "日曜日",
+          "value": "0"
+        },
+        {
+          "title": "月曜日",
+          "value": "1"
+        }
+      ],
+      "default": "0"
+    },
+    {
+      "name": "showWeeks",
+      "type": "checkbox",
+      "required": false,
+      "title": "週番号",
+      "label": "週番号を表示する",
+      "description": "カレンダーの左端に週番号を表示します",
+      "default": false
+    },
+    {
+      "name": "showHolidayNames",
+      "type": "checkbox",
+      "required": false,
+      "title": "祝日名",
+      "label": "日付の下に祝日名を表示する",
+      "description": "祝日の日付の下に祝日名を小さく表示します",
+      "default": true
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.101.0",
+    "weeknumber": "^1.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.5",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.10",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "biome check --write",
+    "lint": "biome check && tsc --noEmit",
+    "update-holidays": "node scripts/update-holidays.mjs",
+    "publish": "npx @raycast/api@latest publish",
+    "format": "biome format --write"
+  },
+  "packageManager": "pnpm@11.1.2"
+}
