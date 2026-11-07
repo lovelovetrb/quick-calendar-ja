@@ -3,6 +3,8 @@
 日本の祝日に対応した Raycast 用の月表示カレンダーです。
 [raycast/extensions の Quick Calendar](https://github.com/raycast/extensions/tree/main/extensions/calendar)（MIT License）をもとにしています。
 
+![スクリーンショット](docs/screenshot.png)
+
 - 日曜日・祝日は赤、土曜日は青で表示します
 - 週の始まり（日曜／月曜）、週番号、祝日名の表示は設定で切り替えられます
 
