@@ -5,6 +5,7 @@ import {
   Detail,
   environment,
   getPreferenceValues,
+  type Keyboard,
   openExtensionPreferences,
   showToast,
   Toast,
@@ -19,6 +20,55 @@ interface Preferences {
   showWeeks: boolean;
   showHolidayNames: boolean;
 }
+
+type Shortcut = { modifiers: Keyboard.KeyModifier[]; key: Keyboard.KeyEquivalent };
+
+/**
+ * 月・年の移動。矢印キーがメインで、Vim / Emacs 風のキーでも同じ操作ができる。
+ * Vim: h/l で月、k/j で年（上=前、下=次）
+ * Emacs: C-b/C-f で月、C-p/C-n で年
+ */
+const NAV_ACTIONS: {
+  title: string;
+  months: number;
+  icon: { dark: string; light: string };
+  arrow: Shortcut;
+  vim: Shortcut;
+  emacs: Shortcut;
+}[] = [
+  {
+    title: "前の月",
+    months: -1,
+    icon: { dark: "left-dark.png", light: "left.png" },
+    arrow: { modifiers: [], key: "arrowLeft" },
+    vim: { modifiers: [], key: "h" },
+    emacs: { modifiers: ["ctrl"], key: "b" },
+  },
+  {
+    title: "次の月",
+    months: 1,
+    icon: { dark: "right-dark.png", light: "right.png" },
+    arrow: { modifiers: [], key: "arrowRight" },
+    vim: { modifiers: [], key: "l" },
+    emacs: { modifiers: ["ctrl"], key: "f" },
+  },
+  {
+    title: "前の年",
+    months: -12,
+    icon: { dark: "double-left-dark.png", light: "double-left.png" },
+    arrow: { modifiers: ["shift"], key: "arrowLeft" },
+    vim: { modifiers: [], key: "k" },
+    emacs: { modifiers: ["ctrl"], key: "p" },
+  },
+  {
+    title: "次の年",
+    months: 12,
+    icon: { dark: "double-right-dark.png", light: "double-right.png" },
+    arrow: { modifiers: ["shift"], key: "arrowRight" },
+    vim: { modifiers: [], key: "j" },
+    emacs: { modifiers: ["ctrl"], key: "n" },
+  },
+];
 
 function firstOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -87,40 +137,30 @@ export default function Command() {
               onAction={goToCurrent}
             />
           </ActionPanel.Section>
-          <ActionPanel.Section title="月を移動">
-            <Action
-              title="前の月"
-              shortcut={{ modifiers: [], key: "arrowLeft" }}
-              icon={{ source: { dark: "left-dark.png", light: "left.png" }, tintColor: Color.PrimaryText }}
-              onAction={() => shift(-1)}
-            />
-            <Action
-              title="次の月"
-              shortcut={{ modifiers: [], key: "arrowRight" }}
-              icon={{ source: { dark: "right-dark.png", light: "right.png" }, tintColor: Color.PrimaryText }}
-              onAction={() => shift(1)}
-            />
+          <ActionPanel.Section title="移動">
+            {NAV_ACTIONS.map((a) => (
+              <Action
+                key={a.title}
+                title={a.title}
+                shortcut={{ modifiers: a.arrow.modifiers, key: a.arrow.key }}
+                icon={{ source: a.icon, tintColor: Color.PrimaryText }}
+                onAction={() => shift(a.months)}
+              />
+            ))}
           </ActionPanel.Section>
-          <ActionPanel.Section title="年を移動">
-            <Action
-              title="前の年"
-              shortcut={{ modifiers: ["shift"], key: "arrowLeft" }}
-              icon={{
-                source: { dark: "double-left-dark.png", light: "double-left.png" },
-                tintColor: Color.PrimaryText,
-              }}
-              onAction={() => shift(-12)}
-            />
-            <Action
-              title="次の年"
-              shortcut={{ modifiers: ["shift"], key: "arrowRight" }}
-              icon={{
-                source: { dark: "double-right-dark.png", light: "double-right.png" },
-                tintColor: Color.PrimaryText,
-              }}
-              onAction={() => shift(12)}
-            />
-          </ActionPanel.Section>
+          {(["vim", "emacs"] as const).map((style) => (
+            <ActionPanel.Section key={style} title={style === "vim" ? "移動（Vim）" : "移動（Emacs）"}>
+              {NAV_ACTIONS.map((a) => (
+                <Action
+                  key={a.title}
+                  title={a.title}
+                  shortcut={{ modifiers: a[style].modifiers, key: a[style].key }}
+                  icon={{ source: a.icon, tintColor: Color.PrimaryText }}
+                  onAction={() => shift(a.months)}
+                />
+              ))}
+            </ActionPanel.Section>
+          ))}
           <ActionPanel.Section>
             <Action
               title="拡張機能の設定を開く"
